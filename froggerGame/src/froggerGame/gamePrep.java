@@ -2,12 +2,15 @@ package froggerGame;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-public class gamePrep extends JFrame {
+
+public class gamePrep extends JFrame implements KeyListener {
 
 	//declare copies of sprites
 	private frogSprite frog;
@@ -44,8 +47,8 @@ public class gamePrep extends JFrame {
 		
 		
 		
-		
-		
+		content.addKeyListener(this);
+		content.setFocusable(true);
 		
 		//populate game screen with sprites
 		// !!ORDER MATTERS!!
@@ -62,6 +65,76 @@ public class gamePrep extends JFrame {
 		gamePrep newGame = new gamePrep();
 		newGame.setVisible(true);
 		// KEEP MAIN TO THESE 2 LINES!! //
+	}
+
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+		//current x and y of frog before step
+		int x = frog.getX();
+		int y = frog.getY();
+		
+		//new x or y for each direction key (UP, DOWN, LEFT, RIGHT)
+		if ( e.getKeyCode()==KeyEvent.VK_UP) {
+			
+			//MOVE UP ONE STEP
+			y -= gameProperties.STEP;
+			
+			//Wrap character to other side if he goes off screen
+			if (y + frog.getHeight() < 0) { y = gameProperties.SCREEN_HEIGHT; }
+			
+		} else if ( e.getKeyCode()==KeyEvent.VK_DOWN) {
+			
+			//MOVE DOWN ONE STEP
+			y += gameProperties.STEP;
+			
+			//Wrap character to other side if he goes off screen
+			if (y >= gameProperties.SCREEN_HEIGHT) { y = -1 * frog.getHeight(); }
+			
+		} else if ( e.getKeyCode()==KeyEvent.VK_LEFT) {
+	
+			//MOVE LEFT ONE STEP
+			x -= gameProperties.STEP;
+			
+			//Wrap character to other side if he goes off screen
+			if (x + frog.getWidth() < 0) { x = gameProperties.SCREEN_WIDTH; }
+			
+		} else if ( e.getKeyCode()==KeyEvent.VK_RIGHT) {
+			
+			//MOVE RIGHT ONE STEP
+			x += gameProperties.STEP;
+			
+			//Wrap character to other side if he goes off screen
+			if (x >= gameProperties.SCREEN_WIDTH) { x = -1 * frog.getWidth(); }
+			
+		} else {
+			
+			//for all other keys, DONT move character 
+			return;
+		}
+		
+		//move the frog to new spot with new x and y
+		frog.setX(x);
+		frog.setY(y);
+		//move the label with it
+		frogLabel.setLocation(frog.getX(), frog.getY() );
+		
+	}
+
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
