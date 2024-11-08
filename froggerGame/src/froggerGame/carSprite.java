@@ -1,5 +1,6 @@
 package froggerGame;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 
@@ -16,9 +17,9 @@ public class carSprite extends sprite implements Runnable {
 		// TODO Auto-generated constructor stub
 	}
 
-	public carSprite(int x, int y, int height, int width, String image, Boolean moving) {
+	public carSprite(int x, int y, int height, int width, String image, Boolean isMoving) {
 		super(x, y, height, width, image);
-		this.isMoving = moving;
+		this.isMoving = isMoving;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -83,9 +84,6 @@ public class carSprite extends sprite implements Runnable {
 		// TODO Auto-generated method stub
 		
 		while (this.getIsMoving() == true) {
-			
-			System.out.println("test");
-			
 			int temp = this.getX();
 			
 			//set direction of moving car
@@ -106,8 +104,11 @@ public class carSprite extends sprite implements Runnable {
 			this.setX(temp);
 			carLabel.setLocation( this.getX(), this.getY() );
 			
+			//collision text
+			this.detectCollision();
+			
 			try {
-				Thread.sleep(100);
+				Thread.sleep(200);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -116,15 +117,36 @@ public class carSprite extends sprite implements Runnable {
 		
 	}
 	
+	//method to check if there's collision with the frog
+	
+	private void detectCollision() {
+		if (this.hitbox.intersects( frog.getHitbox() ) ) {
+			
+			System.out.println("Collision");
+			
+			this.setIsMoving(false);
+			this.frogLabel.setIcon( new ImageIcon( getClass().getResource(gameProperties.FROG_DEAD_IMAGE) ) );	
+			this.stopThread();
+		}
+	}
+	
+	
 	//method to start thread
 	public void runThread() {
 		
 		//if thread isn't running, start thread
-		//if ( this.getIsMoving() != false ) {
+		if ( this.getIsMoving() == false ) {
 			this.setIsMoving(true);
 			thread = new Thread(this, "car thread");
 			thread.start();
-		//}
+		}
 		
 	}
+	
+	public void stopThread() {
+		this.setIsMoving(false);
+	}
+	
+	
+	
 }

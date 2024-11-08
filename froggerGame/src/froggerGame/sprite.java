@@ -45,6 +45,8 @@ public class sprite {
 
 	public void setX(int x) {
 		this.x = x;
+		//move hitbox with frog
+		this.hitbox.x = this.x;
 	}
 
 
@@ -54,6 +56,8 @@ public class sprite {
 
 	public void setY(int y) {
 		this.y = y;
+		//move hitbox with frog
+		this.hitbox.y = this.y;
 	}
 
 	public int getHeight() {
@@ -83,6 +87,16 @@ public class sprite {
 	public Rectangle getHitbox() {
 		return hitbox;
 	}
+	
+	//for debugging, likely won't be used
+	public int getHitboxX() {
+		return this.hitbox.x;
+	}
+	
+	public int getHitboxY() {
+		return this.hitbox.y;
+	}
+	
 	
 	
 }
