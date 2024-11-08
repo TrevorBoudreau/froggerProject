@@ -14,12 +14,12 @@ public class gamePrep extends JFrame implements KeyListener {
 
 	//declare copies of sprites
 	private frogSprite frog;
-	private carSprite car;
+	private carSprite car[][];
 	
 	//gui elements
 	private Container content;
-	private JLabel backgroundLabel, frogLabel;
-	private ImageIcon frogImage, carImage, backgroundImage;
+	private JLabel backgroundLabel, frogLabel, carLabel[][];
+	private ImageIcon frogImage, carImage, carImageFlipped, backgroundImage;
 	
 	public gamePrep() {
 		
@@ -37,15 +37,49 @@ public class gamePrep extends JFrame implements KeyListener {
 		backgroundLabel.setLocation( 0, 0 );
 		
 		//set up frog sprite
-		frog = new frogSprite(gameProperties.SCREEN_WIDTH - 600, gameProperties.SCREEN_HEIGHT - 150, 100, 90,"frogSprite.png");
+		frog = new frogSprite(gameProperties.SCREEN_WIDTH - 600, gameProperties.SCREEN_HEIGHT - 200, 100, 90,"frogSprite.png");
 		frogLabel = new JLabel();
 		frogImage = new ImageIcon( getClass().getResource("/images/" + frog.getImage() ) );
 		frogLabel.setIcon( frogImage ); 
 		frogLabel.setSize( frog.getWidth(), frog.getHeight() );
 		frogLabel.setLocation( frog.getX(), frog.getY() );
 		
-		
-		
+		//set up and initialize multi-array of car sprites
+		carImage = new ImageIcon(getClass().getResource("/images/carSprite.png"));
+		carImageFlipped = new ImageIcon(getClass().getResource("/images/carReverseSprite.png"));
+		car = new carSprite[4][3];
+		carLabel = new JLabel[4][3];
+			//will loop through all the cars
+		for ( int i = 0; i < car.length; i++ ) {
+			int temp = 300;//temp local variable for adjusting height during car initialization
+			
+			for ( int j = 0; j < car[i].length; j++ ) {
+				
+				System.out.println("test2");
+				
+				car[i][j] = new carSprite( (i * 300), gameProperties.SCREEN_HEIGHT - temp, 100, 100, "/images/carSprite.png", false);
+				car[i][j].setFrog(frog);
+				carLabel[i][j] = new JLabel();
+				
+				if (j != 1 ) {
+					car[i][j].setStepSpeed(gameProperties.STEP_FAST);
+					car[i][j].setStepDirection(1);
+					carLabel[i][j].setIcon(carImage);
+				} else {
+					car[i][j].setStepSpeed(gameProperties.STEP_SLOW);
+					car[i][j].setStepDirection(2);
+					carLabel[i][j].setIcon(carImageFlipped);
+				}
+				
+				carLabel[i][j].setSize( car[i][j].getWidth(), car[i][j].getHeight() );
+				carLabel[i][j].setLocation( car[i][j].getX(), car[i][j].getY() );
+				
+				car[i][j].setCarLabel( carLabel[i][j] );
+				car[i][j].setFrogLabel(frogLabel);
+				
+				temp += 100;
+			}
+		}
 		
 		content.addKeyListener(this);
 		content.setFocusable(true);
@@ -53,7 +87,20 @@ public class gamePrep extends JFrame implements KeyListener {
 		//populate game screen with sprites
 		// !!ORDER MATTERS!!
 		add(frogLabel);
+		for ( int i = 0; i < car.length; i++ ) {
+			for ( int j = 0; j < car[i].length; j++ ) {
+				System.out.println("test3");
+				add( carLabel[i][j] );
+			}
+		}
 		add(backgroundLabel);
+		
+		//start car and log threads
+		for ( int i = 0; i < car.length; i++ ) {
+			for ( int j = 0; j < car[i].length; j++ ) {
+				car[i][j].runThread();
+			}
+		}
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}

@@ -1,5 +1,7 @@
 package froggerGame;
 
+import java.awt.Rectangle;
+
 //import java.awt.Rectangle;
 
 /*
@@ -14,12 +16,14 @@ public class sprite {
 	protected int x, y;
 	protected int height, width;
 	protected String image;
-	//protected Rectangle r;
+	
+	//for collision detection with cars and logs
+	protected Rectangle hitbox;
 	
 	//default constructor
 	public sprite() {
 		super();
-		
+		hitbox = new Rectangle(0,0,0,0);
 	}
 
 	//secondary constructor
@@ -31,6 +35,7 @@ public class sprite {
 		this.height = height;
 		this.width = width;
 		this.image = image;
+		hitbox = new Rectangle(x,y,width,height);
 	}
 
 	//auto-generated getters and setters
@@ -41,6 +46,7 @@ public class sprite {
 	public void setX(int x) {
 		this.x = x;
 	}
+
 
 	public int getY() {
 		return y;
@@ -74,7 +80,9 @@ public class sprite {
 		this.image = image;
 	}
 	
-	
+	public Rectangle getHitbox() {
+		return hitbox;
+	}
 	
 	
 }

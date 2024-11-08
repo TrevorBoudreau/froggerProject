@@ -1,15 +1,130 @@
 package froggerGame;
 
-public class carSprite extends sprite {
+import javax.swing.JLabel;
+
+
+public class carSprite extends sprite implements Runnable {
+	
+	private Boolean isMoving;
+	private Thread thread;
+	private frogSprite frog;
+	private JLabel carLabel, frogLabel;
+	private int stepSpeed, stepDirection;
 
 	public carSprite() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public carSprite(int x, int y, int height, int width, String image) {
+	public carSprite(int x, int y, int height, int width, String image, Boolean moving) {
 		super(x, y, height, width, image);
+		this.isMoving = moving;
 		// TODO Auto-generated constructor stub
 	}
 
+	public Boolean getIsMoving() {
+		return isMoving;
+	}
+
+	public void setIsMoving(Boolean isMoving) {
+		this.isMoving = isMoving;
+	}
+
+	public Thread getThread() {
+		return thread;
+	}
+
+	public void setThread(Thread thread) {
+		this.thread = thread;
+	}
+
+	public frogSprite getFrog() {
+		return frog;
+	}
+
+	public void setFrog(frogSprite frog) {
+		this.frog = frog;
+	}
+
+	public JLabel getCarLabel() {
+		return carLabel;
+	}
+
+	public void setCarLabel(JLabel carLabel) {
+		this.carLabel = carLabel;
+	}
+
+	public JLabel getFrogLabel() {
+		return frogLabel;
+	}
+
+	public void setFrogLabel(JLabel frogLabel) {
+		this.frogLabel = frogLabel;
+	}
+
+	public int getStepSpeed() {
+		return stepSpeed;
+	}
+
+	public void setStepSpeed(int stepSpeed) {
+		this.stepSpeed = stepSpeed;
+	}
+
+	public int getStepDirection() {
+		return stepDirection;
+	}
+
+	public void setStepDirection(int stepDirection) {
+		this.stepDirection = stepDirection;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+		while (this.getIsMoving() == true) {
+			
+			System.out.println("test");
+			
+			int temp = this.getX();
+			
+			//set direction of moving car
+			if ( getStepDirection() == 1 ) {
+				 temp += stepSpeed;
+			} else if (getStepDirection() == 2 ) {
+				 temp -= stepSpeed;
+			}
+			
+			//check if car goes offscreen and wrap to other side
+			if ( temp >= gameProperties.SCREEN_WIDTH && stepDirection == 1 ) {
+				temp = this.getWidth() * -1;
+			} else if ( temp + this.getWidth() <= 0 && stepDirection == 2 ) {
+				temp = gameProperties.SCREEN_WIDTH;
+			}
+			
+			//update location of car and label
+			this.setX(temp);
+			carLabel.setLocation( this.getX(), this.getY() );
+			
+			try {
+				Thread.sleep(100);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+	
+	//method to start thread
+	public void runThread() {
+		
+		//if thread isn't running, start thread
+		//if ( this.getIsMoving() != false ) {
+			this.setIsMoving(true);
+			thread = new Thread(this, "car thread");
+			thread.start();
+		//}
+		
+	}
 }
