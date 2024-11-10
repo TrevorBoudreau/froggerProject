@@ -42,7 +42,7 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		backgroundLabel.setLocation( 0, 0 );
 		
 		//set up frog sprite
-		frog = new frogSprite(400, 800, 100, 90, gameProperties.FROG_IMAGE);
+		frog = new frogSprite(400, 400, 100, 90, gameProperties.FROG_IMAGE);
 		frogLabel = new JLabel();
 		frogImage = new ImageIcon( getClass().getResource( frog.getImage() ) );
 		frogLabel.setIcon( frogImage ); 
@@ -159,6 +159,8 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 			}
 		}
 		
+		System.out.println("frog y:" + frog.getY());
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
@@ -201,6 +203,8 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 				log[i][j].stopThread();
 			}
 		}
+		
+		this.frogLabel.setIcon( new ImageIcon( getClass().getResource(gameProperties.FROG_DEAD_IMAGE) ) );	
 				
 		//prevent player from moving
 		content.setFocusable(false);
@@ -251,6 +255,7 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 				log[i][j].setY(gameProperties.SCREEN_HEIGHT - temp2);
 				log[i][j].setFrog(frog);
 				log[i][j].setFrogLabel(frogLabel);
+				log[i][j].setIntersecting(true);
 				
 				logLabel[i][j].setLocation( log[i][j].getX(), log[i][j].getY() );
 				
@@ -277,75 +282,56 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
-		//IF ANY CAR HAS STOPPED, END GAME
-		//temp variable to break out of nested loop
-		boolean breakOut = false;
 		
-		for ( int i = 0; i < car.length; i++ ) {
-			for ( int j = 0; j < car[i].length; j++ ) {
+		//current x and y of frog before step
+		int x = frog.getX();
+		int y = frog.getY();
 			
-				if ( car[i][j].getIsMoving() == false ) {
-					gameLose();
-					
-					breakOut = true;
-					break;
-				}
+		//new x or y for each direction key (UP, DOWN, LEFT, RIGHT)
+		if ( e.getKeyCode()==KeyEvent.VK_UP) {
 				
-				if (breakOut == true) { break; }
+			//MOVE UP ONE STEP
+			y -= gameProperties.STEP;
+				
+		} else if ( e.getKeyCode()==KeyEvent.VK_DOWN) {
+				
+			//prevent frog from moving under lower perimeter
+			if (y + gameProperties.STEP < gameProperties.SCREEN_HEIGHT) {
+				y += gameProperties.STEP;
 			}
+				
+		} else if ( e.getKeyCode()==KeyEvent.VK_LEFT) {
+		
+			//MOVE LEFT ONE STEP
+			x -= gameProperties.STEP;
+				
+			//Wrap character to other side if he goes off screen
+			if (x + frog.getWidth() < 0) { x = gameProperties.SCREEN_WIDTH; }
+				
+		} else if ( e.getKeyCode()==KeyEvent.VK_RIGHT) {
+				
+			//MOVE RIGHT ONE STEP
+			x += gameProperties.STEP;
+				
+			//Wrap character to other side if he goes off screen
+			if (x >= gameProperties.SCREEN_WIDTH) { x = -1 * frog.getWidth(); }
+				
+		} else {
+				
+			//for all other keys, DONT move character 
+			return;
 		}
+			
+		//move the frog to new spot with new x and y
+		frog.setX(x);
+		frog.setY(y);
+			
+		//System.out.println("frog x: " + frog.getX() + " hitbox x: " + frog.getHitboxX() + "frog y: " + frog.getY() + " hitbox y: " + frog.getHitboxY());	
+			
+		//move the label with it
+		frogLabel.setLocation( frog.getX() , frog.getY() );
+			
 		
-		if (breakOut == false) {
-		
-			//current x and y of frog before step
-			int x = frog.getX();
-			int y = frog.getY();
-			
-			//new x or y for each direction key (UP, DOWN, LEFT, RIGHT)
-			if ( e.getKeyCode()==KeyEvent.VK_UP) {
-				
-				//MOVE UP ONE STEP
-				y -= gameProperties.STEP;
-				
-			} else if ( e.getKeyCode()==KeyEvent.VK_DOWN) {
-				
-				//prevent frog from moving under lower perimeter
-				if (y + gameProperties.STEP < gameProperties.SCREEN_HEIGHT) {
-					y += gameProperties.STEP;
-				}
-				
-			} else if ( e.getKeyCode()==KeyEvent.VK_LEFT) {
-		
-				//MOVE LEFT ONE STEP
-				x -= gameProperties.STEP;
-				
-				//Wrap character to other side if he goes off screen
-				if (x + frog.getWidth() < 0) { x = gameProperties.SCREEN_WIDTH; }
-				
-			} else if ( e.getKeyCode()==KeyEvent.VK_RIGHT) {
-				
-				//MOVE RIGHT ONE STEP
-				x += gameProperties.STEP;
-				
-				//Wrap character to other side if he goes off screen
-				if (x >= gameProperties.SCREEN_WIDTH) { x = -1 * frog.getWidth(); }
-				
-			} else {
-				
-				//for all other keys, DONT move character 
-				return;
-			}
-			
-			//move the frog to new spot with new x and y
-			frog.setX(x);
-			frog.setY(y);
-			
-			//System.out.println("frog x: " + frog.getX() + " hitbox x: " + frog.getHitboxX() + "frog y: " + frog.getY() + " hitbox y: " + frog.getHitboxY());	
-			
-			//move the label with it
-			frogLabel.setLocation( frog.getX() , frog.getY() );
-			
-		}
 		
 		
 	}
@@ -355,6 +341,47 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
 	
+		//IF ANY CAR HAS STOPPED, END GAME
+				//temp variable to break out of nested loop
+				boolean breakOut = false;
+				//temp variable to flag if one log is intersecting
+				boolean intersect = false;
+				
+				for ( int i = 0; i < car.length; i++ ) {
+					for ( int j = 0; j < car[i].length; j++ ) {
+					
+						if ( car[i][j].getIsMoving() == false ) {
+							gameLose();
+							
+							breakOut = true;
+							break;
+						}
+						
+						if (breakOut == true) { break; }
+					}
+				}
+				
+				//IF FROG IS NOT INTERSECTING WITH LOG, END GAME
+				for ( int i = 0; i < log.length; i++ ) {
+					for ( int j = 0; j < log[i].length; j++ ) {
+						
+						
+						if (log[i][j].isIntersecting() == true ) {
+							
+							intersect = true;
+							
+							breakOut = true;
+							break;
+						}
+						
+						if (breakOut == true) { break; }
+					}
+				}
+				
+				if (intersect != true) {
+					gameLose();
+				}
+				
 	}
 
 

@@ -1,5 +1,6 @@
 package froggerGame;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class logSprite extends sprite implements Runnable {
@@ -10,6 +11,7 @@ public class logSprite extends sprite implements Runnable {
 	private frogSprite frog;
 	private JLabel frogLabel;
 	private int stepSpeed, stepDirection;
+	boolean isIntersecting = true;
 
 	public logSprite() {
 		super();
@@ -67,6 +69,9 @@ public class logSprite extends sprite implements Runnable {
 	public void setStepSpeed(int stepSpeed) {
 		this.stepSpeed = stepSpeed;
 	}
+	public void setIntersecting(boolean isIntersecting) {
+		this.isIntersecting = isIntersecting;
+	}
 
 	@Override
 	public void run() {
@@ -107,7 +112,7 @@ public class logSprite extends sprite implements Runnable {
 		}
 			
 	}
-	
+
 	public void stopThread() {
 		this.setIsMoving(false);
 	}
@@ -117,7 +122,7 @@ public class logSprite extends sprite implements Runnable {
 	public void runThread() {
 			
 		if ( this.getIsMoving() == false ) {
-			System.out.println("log thread");
+			//System.out.println("log thread");
 			this.setIsMoving(true);
 			thread = new Thread(this, "log thread");
 			thread.start();
@@ -125,10 +130,50 @@ public class logSprite extends sprite implements Runnable {
 			
 	}
 	
-
+	//return a boolean value when one of the logs detects an intersection with a frog.
+	public boolean isIntersecting() {
+				
+		return isIntersecting;
+		
+	}
+	
+	//check if frog is in water area and is intersecting with a log
 	private void detectCollision() {
 		// TODO Auto-generated method stub
 		
+		//check if the frog is currently in the water area
+		if ( (gameProperties.SCREEN_HEIGHT - 900) <= frog.getY() && frog.getY() <= (gameProperties.SCREEN_HEIGHT - 700) ){
+		
+			this.setIntersecting(false);
+			System.out.println("in water");
+			
+			//check if frog sprite intersects with log sprite
+			if ( this.hitbox.intersects( frog.getHitbox() ) ) {
+
+				System.out.println("intersect with log");
+				this.setIntersecting(true);
+				
+				//move frog in same direction as log
+				if ( getStepDirection() == 1 ) {
+					
+					//update frog and label
+					frog.setX( frog.getX() + stepSpeed );
+					frogLabel.setLocation( frog.getX(), frog.getY() );
+					
+				} else if ( getStepDirection() == 2 ) {
+					frog.setX( frog.getX() - stepSpeed );
+					frogLabel.setLocation( frog.getX(), frog.getY() );
+				}
+				
+			} else {
+				
+				this.setIntersecting(false);
+				this.isIntersecting();
+			}
+			
+		}
+			
+			
 	}
 	
 	
