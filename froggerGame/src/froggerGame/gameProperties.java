@@ -16,6 +16,8 @@ public class gameProperties {
 	
 	public static final String FROG_DEAD_IMAGE = "/images/deadSprite.png";
 	
+	public static final String LOG_IMAGE = "/images/logSprite.png";
+	
 	public static final String CAR_LOG = "/images/logSprite.png";
 	
 	public static final String CAR_IMAGE = "/images/carSprite.png";

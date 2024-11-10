@@ -1,28 +1,27 @@
 package froggerGame;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-
-public class carSprite extends sprite implements Runnable {
+public class logSprite extends sprite implements Runnable {
 	
 	private Boolean isMoving;
 	private Thread thread;
+	private JLabel logLabel;
 	private frogSprite frog;
-	private JLabel carLabel, frogLabel;
+	private JLabel frogLabel;
 	private int stepSpeed, stepDirection;
 
-	public carSprite() {
+	public logSprite() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-	public carSprite(int x, int y, int height, int width, String image, Boolean isMoving) {
+	
+	public logSprite(int x, int y, int height, int width, String image, Boolean isMoving) {
 		super(x, y, height, width, image);
 		this.isMoving = isMoving;
 		// TODO Auto-generated constructor stub
 	}
-
+	
 	public Boolean getIsMoving() {
 		return isMoving;
 	}
@@ -30,21 +29,27 @@ public class carSprite extends sprite implements Runnable {
 	public void setIsMoving(Boolean isMoving) {
 		this.isMoving = isMoving;
 	}
+	
+	public JLabel getLogLabel() {
+		return logLabel;
+	}
 
+	public int getStepDirection() {
+		return stepDirection;
+	}
+	public void setStepDirection(int stepDirection) {
+		this.stepDirection = stepDirection;
+	}
+	public void setLogLabel(JLabel logLabel) {
+		this.logLabel = logLabel;
+	}
+	
 	public frogSprite getFrog() {
 		return frog;
 	}
 
 	public void setFrog(frogSprite frog) {
 		this.frog = frog;
-	}
-
-	public JLabel getCarLabel() {
-		return carLabel;
-	}
-
-	public void setCarLabel(JLabel carLabel) {
-		this.carLabel = carLabel;
 	}
 
 	public JLabel getFrogLabel() {
@@ -63,31 +68,23 @@ public class carSprite extends sprite implements Runnable {
 		this.stepSpeed = stepSpeed;
 	}
 
-	public int getStepDirection() {
-		return stepDirection;
-	}
-
-	public void setStepDirection(int stepDirection) {
-		this.stepDirection = stepDirection;
-	}
-
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		
+		System.out.println("log tick");
 		while (this.getIsMoving() == true) {
+			
 			int temp = this.getX();
 			
-			//System.out.println("car tick");
-			
-			//set direction of moving car
+			//set direction of moving log
 			if ( getStepDirection() == 1 ) {
 				 temp += stepSpeed;
 			} else if (getStepDirection() == 2 ) {
 				 temp -= stepSpeed;
 			}
 			
-			//check if car goes offscreen and wrap to other side
+			//check if log goes offscreen and wrap to other side
 			if ( temp >= gameProperties.SCREEN_WIDTH && stepDirection == 1 ) {
 				temp = this.getWidth() * -1;
 			} else if ( temp + this.getWidth() <= 0 && stepDirection == 2 ) {
@@ -96,7 +93,7 @@ public class carSprite extends sprite implements Runnable {
 			
 			//update location of car and label
 			this.setX(temp);
-			carLabel.setLocation( this.getX(), this.getY() );
+			logLabel.setLocation( this.getX(), this.getY() );
 			
 			//collision text
 			this.detectCollision();
@@ -108,39 +105,29 @@ public class carSprite extends sprite implements Runnable {
 			}
 			
 		}
-		
-	}
-	
-	//method to check if there's collision with the frog
-	
-	private void detectCollision() {
-		if (this.hitbox.intersects( frog.getHitbox() ) ) {
 			
-			System.out.println("Collision");
-			
-			this.setIsMoving(false);
-			this.frogLabel.setIcon( new ImageIcon( getClass().getResource(gameProperties.FROG_DEAD_IMAGE) ) );	
-			this.stopThread();
-		}
 	}
-	
 	
 	//method to start thread
 	public void runThread() {
-		
-		//if thread isn't running, start thread
+			
 		if ( this.getIsMoving() == false ) {
+			System.out.println("log thread");
 			this.setIsMoving(true);
-			thread = new Thread(this, "car thread");
+			thread = new Thread(this, "log thread");
 			thread.start();
 		}
+			
+	}
+	
+
+	private void detectCollision() {
+		// TODO Auto-generated method stub
 		
 	}
 	
-	public void stopThread() {
-		this.setIsMoving(false);
-	}
 	
+
 	
 	
 }

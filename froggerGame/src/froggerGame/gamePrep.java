@@ -19,9 +19,10 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 	//sprites, labels, icons
 	private Container content;
 	private frogSprite frog;
+	private logSprite log[][];
 	private carSprite car[][];
-	private JLabel backgroundLabel, frogLabel, carLabel[][];
-	private ImageIcon frogImage, carImage, carImageFlipped, backgroundImage;
+	private JLabel backgroundLabel, frogLabel, carLabel[][], logLabel[][];
+	private ImageIcon frogImage, carImage, carImageFlipped, logImage, backgroundImage;
 	//button
 	private JButton restartBtn;
 	
@@ -84,6 +85,37 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		}	
 		
 		//set up a multi-array of log sprites
+		log = new logSprite[4][3];
+		logLabel = new JLabel[4][3];
+		logImage = new ImageIcon(getClass().getResource(gameProperties.LOG_IMAGE));
+		//loop through all logs
+		for ( int i = 0; i < log.length; i++ ) {
+			int temp = 700;//temp local variable for adjusting height during log initialization
+			
+			for ( int j = 0; j < log[i].length; j++ ) {
+				log[i][j] = new logSprite( (i * 300), gameProperties.SCREEN_HEIGHT - temp, 100, 100, gameProperties.LOG_IMAGE, false);
+				log[i][j].setFrog(frog);
+				logLabel[i][j] = new JLabel();
+				if (j != 1 ) {
+					log[i][j].setStepSpeed(gameProperties.STEP_FAST);
+					log[i][j].setStepDirection(1);
+					logLabel[i][j].setIcon(logImage);
+				} else {
+					log[i][j].setStepSpeed(gameProperties.STEP_SLOW);
+					log[i][j].setStepDirection(2);
+					logLabel[i][j].setIcon(logImage);
+				}
+				
+				logLabel[i][j].setSize(log[i][j].getWidth(), log[i][j].getHeight());
+				logLabel[i][j].setLocation(log[i][j].getX(), log[i][j].getY());
+				
+				log[i][j].setLogLabel(logLabel[i][j]);
+				log[i][j].setFrogLabel(frogLabel);
+				
+				temp += 100;
+			}
+		}
+		
 		
 		//set up restart button
 		restartBtn = new JButton("Continue?");
@@ -107,6 +139,11 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 				add( carLabel[i][j] );
 			}
 		}
+		for ( int i = 0; i < log.length; i++ ) {
+			for ( int j = 0; j < log[i].length; j++ ) {
+				add( logLabel[i][j] );
+			}
+		}
 		add(restartBtn);
 		add(backgroundLabel);
 		
@@ -114,6 +151,11 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		for ( int i = 0; i < car.length; i++ ) {
 			for ( int j = 0; j < car[i].length; j++ ) {
 				car[i][j].runThread();
+			}
+		}
+		for ( int i = 0; i < log.length; i++ ) {
+			for ( int j = 0; j < log[i].length; j++ ) {
+				log[i][j].runThread();
 			}
 		}
 		
