@@ -196,6 +196,11 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 				car[i][j].stopThread();
 			}
 		}
+		for ( int i = 0; i < log.length; i++ ) {
+			for ( int j = 0; j < log[i].length; j++ ) {
+				log[i][j].stopThread();
+			}
+		}
 				
 		//prevent player from moving
 		content.setFocusable(false);
@@ -229,7 +234,6 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 				car[i][j].setX(i * 300);
 				car[i][j].setY(gameProperties.SCREEN_HEIGHT - temp);
 				car[i][j].setFrog(frog);
-				car[i][j].setCarLabel( carLabel[i][j] );
 				car[i][j].setFrogLabel(frogLabel);
 				
 				carLabel[i][j].setLocation( car[i][j].getX(), car[i][j].getY() );
@@ -237,6 +241,22 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 				car[i][j].runThread();
 				
 				temp += 100;
+			}
+		}
+		for ( int i = 0; i < log.length; i++ ) {
+			int temp2 = 700;//temp local variable for adjusting height during log initialization
+			
+			for ( int j = 0; j < car[i].length; j++ ) {
+				log[i][j].setX(i * 300);
+				log[i][j].setY(gameProperties.SCREEN_HEIGHT - temp2);
+				log[i][j].setFrog(frog);
+				log[i][j].setFrogLabel(frogLabel);
+				
+				logLabel[i][j].setLocation( log[i][j].getX(), log[i][j].getY() );
+				
+				log[i][j].runThread();
+				
+				temp2 += 100;
 			}
 		}
 		
@@ -287,16 +307,12 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 				//MOVE UP ONE STEP
 				y -= gameProperties.STEP;
 				
-				//Wrap character to other side if he goes off screen
-				if (y + frog.getHeight() < 0) { y = gameProperties.SCREEN_HEIGHT; }
-				
 			} else if ( e.getKeyCode()==KeyEvent.VK_DOWN) {
 				
-				//MOVE DOWN ONE STEP
-				y += gameProperties.STEP;
-				
-				//Wrap character to other side if he goes off screen
-				if (y >= gameProperties.SCREEN_HEIGHT) { y = -1 * frog.getHeight(); }
+				//prevent frog from moving under lower perimeter
+				if (y + gameProperties.STEP < gameProperties.SCREEN_HEIGHT) {
+					y += gameProperties.STEP;
+				}
 				
 			} else if ( e.getKeyCode()==KeyEvent.VK_LEFT) {
 		

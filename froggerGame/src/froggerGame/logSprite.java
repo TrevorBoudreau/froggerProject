@@ -108,6 +108,11 @@ public class logSprite extends sprite implements Runnable {
 			
 	}
 	
+	public void stopThread() {
+		this.setIsMoving(false);
+	}
+	
+	
 	//method to start thread
 	public void runThread() {
 			
