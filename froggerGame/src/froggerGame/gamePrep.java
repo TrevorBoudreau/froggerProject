@@ -180,6 +180,11 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 				car[i][j].stopThread();
 			}
 		}
+		for ( int i = 0; i < log.length; i++ ) {
+			for ( int j = 0; j < log[i].length; j++ ) {
+				log[i][j].stopThread();
+			}
+		}
 		
 		//prevent player from moving
 		content.setFocusable(false);
@@ -341,46 +346,51 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
 	
-		//IF ANY CAR HAS STOPPED, END GAME
-				//temp variable to break out of nested loop
-				boolean breakOut = false;
-				//temp variable to flag if one log is intersecting
-				boolean intersect = false;
+		//IF ANd CAR HAS STOPPED, END GAME
+		//temp variable to break out of nested loop
+		boolean breakOut = false;
+		//temp variable to flag if one log is intersecting
+		boolean intersect = false;
 				
-				for ( int i = 0; i < car.length; i++ ) {
-					for ( int j = 0; j < car[i].length; j++ ) {
+		for ( int i = 0; i < car.length; i++ ) {
+			for ( int j = 0; j < car[i].length; j++ ) {
 					
-						if ( car[i][j].getIsMoving() == false ) {
-							gameLose();
-							
-							breakOut = true;
-							break;
-						}
-						
-						if (breakOut == true) { break; }
-					}
-				}
-				
-				//IF FROG IS NOT INTERSECTING WITH LOG, END GAME
-				for ( int i = 0; i < log.length; i++ ) {
-					for ( int j = 0; j < log[i].length; j++ ) {
-						
-						
-						if (log[i][j].isIntersecting() == true ) {
-							
-							intersect = true;
-							
-							breakOut = true;
-							break;
-						}
-						
-						if (breakOut == true) { break; }
-					}
-				}
-				
-				if (intersect != true) {
+				if ( car[i][j].getIsMoving() == false ) {
 					gameLose();
+							
+					breakOut = true;
+					break;
 				}
+						
+				if (breakOut == true) { break; }
+			}
+		}
+				
+		//IF FROG IS NOT INTERSECTING WITH LOG, END GAME
+		for ( int i = 0; i < log.length; i++ ) {
+			for ( int j = 0; j < log[i].length; j++ ) {
+						
+						
+				if (log[i][j].isIntersecting() == true ) {
+							
+					intersect = true;
+							
+					breakOut = true;
+					break;
+				}
+					
+				if (breakOut == true) { break; }
+			}
+		}
+				
+		if (intersect != true) {
+			gameLose();
+		}
+		
+		
+		if (frog.getY() < 100) {
+			gameWin();
+		}
 				
 	}
 
