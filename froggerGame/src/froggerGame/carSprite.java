@@ -80,7 +80,6 @@ public class carSprite extends sprite implements Runnable {
 			
 			//System.out.println("car tick");
 			
-			//set direction of moving car
 			if ( getStepDirection() == 1 ) {
 				 temp += stepSpeed;
 			} else if (getStepDirection() == 2 ) {
@@ -119,7 +118,6 @@ public class carSprite extends sprite implements Runnable {
 			System.out.println("Collision");
 			
 			this.setIsMoving(false);
-			this.frogLabel.setIcon( new ImageIcon( getClass().getResource(gameProperties.FROG_DEAD_IMAGE) ) );	
 			this.stopThread();
 		}
 	}

@@ -11,7 +11,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
+
+//Note: due to the way this game implements collision detection with key release, some unexpected errors
+//		may occur if key is tapped too quickly, or if the key is held in.
 
 public class gamePrep extends JFrame implements KeyListener, ActionListener {
 	
@@ -25,6 +29,11 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 	private ImageIcon frogImage, carImage, carImageFlipped, logImage, backgroundImage;
 	//button
 	private JButton restartBtn;
+	//score label
+	private JLabel scoreLabel;
+	//score class
+	private scoreSQL scoreDB;
+	int score = 0;
 	
 	public gamePrep() {
 		
@@ -34,6 +43,10 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		content.setBackground(Color.gray);
 		setLayout(null);
 		
+		//set up score db
+		scoreDB = new scoreSQL();
+		scoreDB.createDB();
+		
 		//display background graphic
 		backgroundImage = new ImageIcon( getClass().getResource(gameProperties.BACKGROUND_IMAGE ) );
 		backgroundLabel = new JLabel();
@@ -42,7 +55,7 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		backgroundLabel.setLocation( 0, 0 );
 		
 		//set up frog sprite
-		frog = new frogSprite(400, 400, 100, 90, gameProperties.FROG_IMAGE);
+		frog = new frogSprite(400, 800, 100, 90, gameProperties.FROG_IMAGE);
 		frogLabel = new JLabel();
 		frogImage = new ImageIcon( getClass().getResource( frog.getImage() ) );
 		frogLabel.setIcon( frogImage ); 
@@ -127,6 +140,15 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		restartBtn.setVisible(false);
 		restartBtn.addActionListener(this);
 		
+		//set up score label
+		score = scoreDB.getScore();
+		scoreLabel = new JLabel("Score: " + scoreDB.getScore(), SwingConstants.CENTER);
+		scoreLabel.setSize( 100, 50 );
+		scoreLabel.setOpaque(true);
+		scoreLabel.setForeground(Color.GREEN);
+		scoreLabel.setBackground(Color.BLACK);
+		scoreLabel.setLocation(gameProperties.SCREEN_WIDTH - 200, gameProperties.SCREEN_HEIGHT - 990 );
+		
 		
 		content.addKeyListener(this);
 		content.setFocusable(true);
@@ -145,6 +167,7 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 			}
 		}
 		add(restartBtn);
+		add(scoreLabel);
 		add(backgroundLabel);
 		
 		//start car and log threads
@@ -159,9 +182,15 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 			}
 		}
 		
-		System.out.println("frog y:" + frog.getY());
-		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	public void setScore(int score) {
+		
+	}
+	
+	public void getScore() {
+		
 	}
 	
 
@@ -174,6 +203,9 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 	}
 	
 	public void gameWin() {
+		
+		System.out.println("GAME WIN");
+		
 		//stop ongoing threads
 		for ( int i = 0; i < car.length; i++ ) {
 			for ( int j = 0; j < car[i].length; j++ ) {
@@ -193,10 +225,13 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		restartBtn.setVisible(true);
 		
 		//update score
-		
+		scoreDB.addScore();
 	}
 	
 	public void gameLose() {
+		
+		System.out.println("GAME LOSE");
+		
 		//stop ongoing threads
 		for ( int i = 0; i < car.length; i++ ) {
 			for ( int j = 0; j < car[i].length; j++ ) {
@@ -218,7 +253,7 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		restartBtn.setVisible(true);
 		
 		//update score
-		
+		scoreDB.minusScore();
 	}
 	
 	public void gameStart() {
@@ -272,6 +307,8 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		
 		frogLabel.setIcon( frogImage );
 		
+		score = scoreDB.getScore();
+		scoreLabel.setText("Score: " + score);
 		
 	}
 	
@@ -346,52 +383,63 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
 	
-		//IF ANd CAR HAS STOPPED, END GAME
-		//temp variable to break out of nested loop
-		boolean breakOut = false;
-		//temp variable to flag if one log is intersecting
-		boolean intersect = false;
-				
-		for ( int i = 0; i < car.length; i++ ) {
-			for ( int j = 0; j < car[i].length; j++ ) {
-					
-				if ( car[i][j].getIsMoving() == false ) {
-					gameLose();
-							
-					breakOut = true;
-					break;
-				}
-						
-				if (breakOut == true) { break; }
-			}
-		}
-				
-		//IF FROG IS NOT INTERSECTING WITH LOG, END GAME
-		for ( int i = 0; i < log.length; i++ ) {
-			for ( int j = 0; j < log[i].length; j++ ) {
-						
-						
-				if (log[i][j].isIntersecting() == true ) {
-							
-					intersect = true;
-							
-					breakOut = true;
-					break;
-				}
-					
-				if (breakOut == true) { break; }
-			}
-		}
-				
-		if (intersect != true) {
-			gameLose();
-		}
-		
-		
+		//END GAME WHEN ENDZONE IS REACHED
 		if (frog.getY() < 100) {
+			
 			gameWin();
-		}
+			
+		} else {
+			
+			//IF ANd CAR HAS STOPPED, END GAME
+			//temp variable to break out of nested loop
+			boolean breakOut = false;
+			//temp variable to flag if one log is intersecting
+			boolean collision = false;
+			//temp variable to flag if one log is intersecting
+			boolean intersect = false;
+			
+			for ( int i = 0; i < car.length; i++ ) {
+				for ( int j = 0; j < car[i].length; j++ ) {
+						
+					if ( car[i][j].getIsMoving() == false ) {
+						collision = true;
+						breakOut = true;
+						break;
+					}
 				
+							
+					if (breakOut == true) { break; }
+				}
+			}
+					
+			//IF FROG IS NOT INTERSECTING WITH LOG, END GAME
+			for ( int i = 0; i < log.length; i++ ) {
+				for ( int j = 0; j < log[i].length; j++ ) {
+							
+							
+					if (log[i][j].isIntersecting() == true ) {
+								
+						intersect = true;
+								
+						breakOut = true;
+						break;
+					}
+						
+					if (breakOut == true) { break; }
+				}
+			}
+					
+			if (intersect != true) {
+				gameLose();
+			}
+			
+			if (collision == true) {
+				gameLose();
+			}
+			
+		}
+			
+			
 	}
 
 

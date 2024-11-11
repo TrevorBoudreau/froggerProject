@@ -77,7 +77,7 @@ public class logSprite extends sprite implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		System.out.println("log tick");
+		//System.out.println("log tick");
 		while (this.getIsMoving() == true) {
 			
 			int temp = this.getX();
@@ -145,7 +145,6 @@ public class logSprite extends sprite implements Runnable {
 		if ( (gameProperties.SCREEN_HEIGHT - 900) <= frog.getY() && frog.getY() <= (gameProperties.SCREEN_HEIGHT - 700) ){
 		
 			this.setIntersecting(false);
-			System.out.println("in water");
 			
 			//check if frog sprite intersects with log sprite
 			if ( this.hitbox.intersects( frog.getHitbox() ) ) {
