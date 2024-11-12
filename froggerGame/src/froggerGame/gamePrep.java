@@ -1,3 +1,6 @@
+//Trevor Boudreau, w0483725
+//prog2200/3288 2024
+
 package froggerGame;
 
 import java.awt.Color;
@@ -12,7 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-
 
 //Note: due to the way this game implements collision detection with key release, some unexpected errors
 //		may occur if key is tapped too quickly, or if the key is held in.
@@ -129,7 +131,6 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 			}
 		}
 		
-		
 		//set up restart button
 		restartBtn = new JButton("Continue?");
 		restartBtn.setSize(100,100);
@@ -183,14 +184,6 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		}
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-	
-	public void setScore(int score) {
-		
-	}
-	
-	public void getScore() {
-		
 	}
 	
 
@@ -373,11 +366,7 @@ public class gamePrep extends JFrame implements KeyListener, ActionListener {
 		//move the label with it
 		frogLabel.setLocation( frog.getX() , frog.getY() );
 			
-		
-		
-		
 	}
-
 
 	@Override
 	public void keyReleased(KeyEvent e) {
